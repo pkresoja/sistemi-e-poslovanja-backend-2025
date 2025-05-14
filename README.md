@@ -1,15 +1,15 @@
-# psep-backend
+# Praktikum: Sistemi E-Poslovanja 2025
 
-To install dependencies:
+Backend aplikacija sa vežbi. Primer `.env`:
 
-```bash
-bun install
 ```
-
-To run:
-
-```bash
-bun run index.ts
+SERVER_PORT=3000
+DATABASE_HOST=localhost
+DATABASE_PORT=3306
+DATABASE_USER=root
+DATABASE_PASSWORD=root
+DATABASE_NAME=sii_psep_2025
+JWT_SECRET=46b6d7cb-cc0b-4e0e-8f14-05640ade4d3b
+JWT_ACCESS_TTL=12s
+JWT_REFRESH_TTL=7d
 ```
-
-This project was created using `bun init` in bun v1.2.12. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.
