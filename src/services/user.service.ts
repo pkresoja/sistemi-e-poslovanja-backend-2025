@@ -47,10 +47,25 @@ export class UserService {
         }
     }
 
+    static async register(model: User) {
+        const hashed = await bcrypt.hash(model.password, 12)
+
+        await repo.save({
+            firstName: model.firstName,
+            lastName: model.lastName,
+            email: model.email,
+            phone: model.phone,
+            genreId: model.genreId,
+            password: hashed,
+            createdAt: new Date()
+        })
+    }
+
     static async validateToken(req: any, res: Response, next: Function) {
         const whitelisted = [
             '/api/user/login',
-            '/api/user/refresh'
+            '/api/user/refresh',
+            '/api/user/register'
         ]
 
         if (whitelisted.includes(req.path)) {

@@ -10,6 +10,12 @@ UserRoute.post('/login', async (req, res) => {
     )
 })
 
+UserRoute.post('/register', async (req, res) => {
+    await defineRequest(res, async () =>
+        await UserService.register(req.body)
+    )
+})
+
 UserRoute.post('/refresh', async (req, res) => {
     await defineRequest(res, async () =>{
         const auth = req.headers['authorization']
