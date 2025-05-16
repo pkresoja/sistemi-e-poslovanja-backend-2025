@@ -7,6 +7,8 @@ import {
 } from "typeorm";
 import { Bookmark } from "./Bookmark";
 import { Reservation } from "./Reservation";
+import type { GenreModel } from "../models/genre.model";
+import type { MovieModel } from "../models/movie.model";
 
 @Index("email_UNIQUE", ["email"], { unique: true })
 @Entity("user", { schema: "sii_psep_2025" })
@@ -16,6 +18,10 @@ export class User {
 
   @Column("int", { name: "genre_id", unsigned: true })
   genreId: number;
+
+  genre: null | GenreModel
+
+  recommended: null | MovieModel[]
 
   @Column("varchar", { name: "first_name", length: 255 })
   firstName: string;

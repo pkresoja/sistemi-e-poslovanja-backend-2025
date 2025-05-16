@@ -4,6 +4,7 @@ import { User } from "../entities/User";
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import type { Response } from "express";
+import { MovieService } from "./movie.service";
 
 const repo = AppDataSource.getRepository(User)
 const tokenSecret = process.env.JWT_SECRET
@@ -42,7 +43,7 @@ export class UserService {
 
         return {
             email: user.email,
-            access: jwt.sign(payload, tokenSecret!, {expiresIn: accessTTL}),
+            access: jwt.sign(payload, tokenSecret!, { expiresIn: accessTTL }),
             refresh: token
         }
     }
@@ -61,6 +62,51 @@ export class UserService {
         })
     }
 
+    static async self(email: string) {
+        const data = await repo.findOne({
+            select: {
+                userId: true,
+                genreId: true,
+                firstName: true,
+                lastName: true,
+                email: true,
+                phone: true,
+                bookmarks: {
+                    bookmarkId: true,
+                    movieId: true,
+                    createdAt: true
+                }
+            },
+            where: {
+                email: email,
+                deletedAt: IsNull()
+            },
+            relations: {
+                bookmarks: true
+            }
+        })
+
+        if (data == null)
+            throw new Error('NOT_FOUND')
+
+
+        // Retreive genre
+        const genre = await MovieService.getGenreById(data.genreId)
+        data.genre = genre.data
+
+        // Retreieve recommended
+        const movies = await MovieService.getMoviesByGenreId(data.genreId)
+        data.recommended = movies.data
+
+        // Retrieve bookmarks
+        for (let bookmark of data.bookmarks) {
+            const movie = await MovieService.getMovieById(bookmark.movieId)
+            bookmark.movie = movie.data
+        }
+
+        return data
+    }
+
     static async validateToken(req: any, res: Response, next: Function) {
         const whitelisted = [
             '/api/user/login',
@@ -74,7 +120,7 @@ export class UserService {
         }
 
         const auth = req.headers['authorization']
-        const token = auth &&  auth.split(' ')[1]
+        const token = auth && auth.split(' ')[1]
 
         if (token == undefined) {
             res.status(401).json({

@@ -16,8 +16,14 @@ UserRoute.post('/register', async (req, res) => {
     )
 })
 
+UserRoute.get('/self', async (req: any, res) => {
+    await defineRequest(res, async () =>
+        await UserService.self(req.user.email)
+    )
+})
+
 UserRoute.post('/refresh', async (req, res) => {
-    await defineRequest(res, async () =>{
+    await defineRequest(res, async () => {
         const auth = req.headers['authorization']
         const token = auth && auth.split(' ')[1]
 
