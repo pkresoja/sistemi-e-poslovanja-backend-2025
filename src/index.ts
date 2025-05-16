@@ -7,6 +7,7 @@ import { AppDataSource } from './db'
 import { CinemaRoute } from './routes/cinema.route'
 import { UserRoute } from './routes/user.route'
 import { UserService } from './services/user.service'
+import { BookmarkRoute } from './routes/bookmark.route'
 
 const app = express()
 app.use(cors())
@@ -18,6 +19,7 @@ app.use(UserService.validateToken)
 app.use('/api/user', UserRoute)
 app.use('/api/movie', MovieRoute)
 app.use('/api/cinema', CinemaRoute)
+app.use('/api/bookmark', BookmarkRoute)
 
 // 404 Not Found
 app.get('{/*path}', function (req, res) {

@@ -79,7 +79,10 @@ export class UserService {
             },
             where: {
                 email: email,
-                deletedAt: IsNull()
+                deletedAt: IsNull(),
+                bookmarks: {
+                    deletedAt: IsNull()
+                }
             },
             relations: {
                 bookmarks: true
