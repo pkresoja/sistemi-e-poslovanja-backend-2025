@@ -5,6 +5,7 @@ import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import type { Response } from "express";
 import { MovieService } from "./movie.service";
+import { BookmarkService } from "./bookmark.service";
 
 const repo = AppDataSource.getRepository(User)
 const tokenSecret = process.env.JWT_SECRET
@@ -70,22 +71,11 @@ export class UserService {
                 firstName: true,
                 lastName: true,
                 email: true,
-                phone: true,
-                bookmarks: {
-                    bookmarkId: true,
-                    movieId: true,
-                    createdAt: true
-                }
+                phone: true
             },
             where: {
                 email: email,
                 deletedAt: IsNull(),
-                bookmarks: {
-                    deletedAt: IsNull()
-                }
-            },
-            relations: {
-                bookmarks: true
             }
         })
 
@@ -102,11 +92,7 @@ export class UserService {
         data.recommended = movies.data
 
         // Retrieve bookmarks
-        for (let bookmark of data.bookmarks) {
-            const movie = await MovieService.getMovieById(bookmark.movieId)
-            bookmark.movie = movie.data
-        }
-
+        data.bookmarks = await BookmarkService.getBookmarksByUserId(data.userId)
         return data
     }
 
