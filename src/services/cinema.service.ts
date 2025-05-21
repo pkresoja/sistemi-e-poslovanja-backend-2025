@@ -1,6 +1,7 @@
 import { IsNull } from "typeorm";
 import { AppDataSource } from "../db";
 import { Cinema } from "../entities/Cinema";
+import { dataExists } from "../utils";
 
 const repo = AppDataSource.getRepository(Cinema)
 
@@ -28,10 +29,7 @@ export class CinemaService {
             }
         })
 
-        if (data == null)
-            throw new Error('NOT_FOUND')
-
-        return data
+        return dataExists(data)
     }
 
     static async createCinema(model: Cinema) {

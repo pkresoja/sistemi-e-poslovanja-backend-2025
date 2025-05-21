@@ -9,6 +9,7 @@ import {
 } from "typeorm";
 import { Hall } from "./Hall";
 import { Reservation } from "./Reservation";
+import type { MovieModel } from "../models/movie.model";
 
 @Index("fk_projection_hall_idx", ["hallId"], {})
 @Entity("projection", { schema: "sii_psep_2025" })
@@ -25,6 +26,8 @@ export class Projection {
 
   @Column("int", { name: "movie_id", unsigned: true })
   movieId: number;
+
+  movie: null | MovieModel
 
   @Column("datetime", { name: "time" })
   time: Date;

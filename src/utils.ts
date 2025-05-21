@@ -7,7 +7,7 @@ export async function defineRequest(res: Response, callback: Function) {
             res.status(204).send()
             return
         }
-        
+
         res.json(data)
     } catch (e: any) {
         const code = e.message == 'NOT_FOUND' ? 404 : 500
@@ -16,4 +16,10 @@ export async function defineRequest(res: Response, callback: Function) {
             timestamp: new Date()
         })
     }
+}
+
+export function dataExists(data: any) {
+    if (data == null)
+        throw new Error('NOT_FOUND')
+    return data
 }

@@ -6,6 +6,7 @@ import jwt from 'jsonwebtoken'
 import type { Response } from "express";
 import { MovieService } from "./movie.service";
 import { BookmarkService } from "./bookmark.service";
+import { dataExists } from "../utils";
 
 const repo = AppDataSource.getRepository(User)
 const tokenSecret = process.env.JWT_SECRET
@@ -141,9 +142,6 @@ export class UserService {
             }
         })
 
-        if (data == null)
-            throw new Error('NOT_FOUND')
-
-        return data
+        return dataExists(data)
     }
 }

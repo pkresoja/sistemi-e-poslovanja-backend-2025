@@ -9,6 +9,7 @@ import { UserRoute } from './routes/user.route'
 import { UserService } from './services/user.service'
 import { BookmarkRoute } from './routes/bookmark.route'
 import { HallRoute } from './routes/hall.route'
+import { ProjectionRoute } from './routes/projection.route'
 
 const app = express()
 app.use(cors())
@@ -22,6 +23,7 @@ app.use('/api/movie', MovieRoute)
 app.use('/api/cinema', CinemaRoute)
 app.use('/api/bookmark', BookmarkRoute)
 app.use('/api/hall', HallRoute)
+app.use('/api/projection', ProjectionRoute)
 
 // 404 Not Found
 app.get('{/*path}', function (req, res) {

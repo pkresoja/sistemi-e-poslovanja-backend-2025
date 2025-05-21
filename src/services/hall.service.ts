@@ -1,14 +1,43 @@
 import { IsNull } from "typeorm"
 import { AppDataSource } from "../db"
 import { Hall } from "../entities/Hall"
+import { dataExists } from "../utils"
 
 const repo = AppDataSource.getRepository(Hall)
 
 export class HallService {
+
+    static async getHalls() {
+        return await repo.find({
+            select:{
+                hallId: true,
+                cinemaId: true,
+                name: true,
+                cinema: {
+                    cinemaId: true,
+                    name: true,
+                    location: true
+                }
+            },
+            where: {
+                cinema: {
+                    deletedAt: IsNull()
+                },
+                deletedAt: IsNull()
+            },
+            relations: {
+                cinema: true
+            }
+        })
+    }
+
     static async getHallsByCinemaId(id: number) {
         return await repo.find({
             where: {
                 cinemaId: id,
+                cinema: {
+                    deletedAt: IsNull()
+                },
                 deletedAt: IsNull()
             }
         })
@@ -17,13 +46,40 @@ export class HallService {
     static async getHallById(id: number) {
         const data = await repo.findOneBy({
             hallId: id,
+            cinema: {
+                deletedAt: IsNull()
+            },
             deletedAt: IsNull()
         })
 
-        if (data == null)
-            throw new Error('NOT_FOUND')
+        return dataExists(data)
+    }
 
-        return data
+    static async getExpandedHallById(id: number) {
+        const data = await repo.findOne({
+            select: {
+                hallId: true,
+                cinemaId: true,
+                name: true,
+                cinema: {
+                    cinemaId: true,
+                    name: true,
+                    location: true
+                }
+            },
+            where: {
+                hallId: id,
+                cinema: {
+                    deletedAt: IsNull()
+                },
+                deletedAt: IsNull()
+            },
+            relations: {
+                cinema: true
+            }
+        })
+
+        return dataExists(data)
     }
 
     static async createHall(model: Hall) {
