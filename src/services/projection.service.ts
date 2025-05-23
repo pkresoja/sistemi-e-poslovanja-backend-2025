@@ -1,4 +1,4 @@
-import { IsNull } from "typeorm";
+import { IsNull, MoreThanOrEqual } from "typeorm";
 import { AppDataSource } from "../db";
 import { Projection } from "../entities/Projection";
 import { MovieService } from "./movie.service";
@@ -45,6 +45,45 @@ export class ProjectionService {
         return dataExists(data)
     }
 
+    static async getProjectionsByMovieShortUrl(link: string) {
+        const movie = await MovieService.getMovieByShortUrl(link)
+        return {
+            movie: movie.data,
+            projections: await repo.find({
+                select: {
+                    projectionId: true,
+                    hallId: true,
+                    hall: {
+                        hallId: true,
+                        name: true,
+                        has3d: true,
+                        dolby: true,
+                        cinemaId: true,
+                        cinema: {
+                            cinemaId: true,
+                            name: true,
+                            location: true
+                        }
+                    },
+                    time: true,
+                },
+                where: {
+                    movieId: movie.data.movieId,
+                    time: MoreThanOrEqual(new Date()),
+                    deletedAt: IsNull()
+                },
+                relations: {
+                    hall: {
+                        cinema: true
+                    }
+                },
+                order: {
+                    time: 'DESC'
+                }
+            })
+        }
+    }
+
     static async createProjection(model: Projection) {
         await repo.save({
             hallId: model.hallId,
@@ -58,7 +97,7 @@ export class ProjectionService {
         const data = await this.getProjectionById(id)
 
         data.hallId = model.hallId,
-        data.movieId = model.movieId
+            data.movieId = model.movieId
         data.time = model.time
         data.updatedAt = new Date()
 

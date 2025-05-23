@@ -18,6 +18,18 @@ export class MovieService {
         return await client.get<MovieModel>(`/movie/${id}`)
     }
 
+    static async getMoviesByIds(ids: number[]) {
+        return await client.request<MovieModel[]>({
+            url: '/movie/list',
+            method: 'post',
+            data: ids
+        })
+    }
+
+    static async getMovieByShortUrl(link: string) {
+        return await client.get<MovieModel>(`/movie/short/${link}`)
+    }
+
     static async getMoviesByGenreId(id: number) {
         return await client.request<MovieModel[]>({
             url: '/movie',

@@ -144,4 +144,18 @@ export class UserService {
 
         return dataExists(data)
     }
+
+    static async getUserIdByEmail(email: string) {
+        const user = await repo.findOne({
+            select: {
+                userId: true
+            },
+            where: {
+                email: email,
+                deletedAt: IsNull()
+            }
+        })
+
+        return dataExists(user).userId
+    }
 }
