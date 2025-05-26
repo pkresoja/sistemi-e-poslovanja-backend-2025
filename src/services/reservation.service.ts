@@ -3,6 +3,7 @@ import { AppDataSource } from "../db";
 import { Reservation } from "../entities/Reservation";
 import { UserService } from "./user.service";
 import { MovieService } from "./movie.service";
+import { dataExists } from "../utils";
 
 const repo = AppDataSource.getRepository(Reservation)
 export class ReservationService {
@@ -56,6 +57,26 @@ export class ReservationService {
         return data
     }
 
+    static async getReservationById(id: number, email: string) {
+        const data = await repo.findOne({
+            where: {
+                reservationId: id,
+                userId: await UserService.getUserIdByEmail(email),
+                deletedAt: IsNull()
+            },
+            relations: {
+                projection: {
+                    hall: {
+                        cinema: true
+                    }
+                }
+            }
+        })
+
+        return dataExists(data)
+    }
+
+
     static async createReservation(email: string, model: Reservation) {
         await repo.save({
             projectionId: model.projectionId,
@@ -63,5 +84,28 @@ export class ReservationService {
             numOfSeats: model.numOfSeats,
             createdAt: new Date()
         })
+    }
+
+    static async getSimpleReservationById(id: number, email: string) {
+        const data = await repo.findOneBy({
+            reservationId: id,
+            userId: await UserService.getUserIdByEmail(email),
+            deletedAt: IsNull()
+        })
+        return dataExists(data)
+    }
+
+    static async updateReservation(id: number, email: string, model: Reservation) {
+        const reservation: Reservation = await this.getSimpleReservationById(id, email)
+        reservation.projectionId = model.projectionId
+        reservation.numOfSeats = model.numOfSeats
+        reservation.updatedAt = new Date()
+        await repo.save(reservation)
+    }
+
+    static async deleteReservation(id: number, email: string) {
+        const reservation: Reservation = await this.getSimpleReservationById(id, email)
+        reservation.deletedAt = new Date()
+        await repo.save(reservation)
     }
 }

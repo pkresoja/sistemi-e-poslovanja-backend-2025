@@ -84,6 +84,41 @@ export class ProjectionService {
         }
     }
 
+    static async getProjectionsByMovieId(id: number) {
+        return await repo.find({
+            select: {
+                projectionId: true,
+                hallId: true,
+                hall: {
+                    hallId: true,
+                    name: true,
+                    has3d: true,
+                    dolby: true,
+                    cinemaId: true,
+                    cinema: {
+                        cinemaId: true,
+                        name: true,
+                        location: true
+                    }
+                },
+                time: true,
+            },
+            where: {
+                movieId: id,
+                time: MoreThanOrEqual(new Date()),
+                deletedAt: IsNull()
+            },
+            relations: {
+                hall: {
+                    cinema: true
+                }
+            },
+            order: {
+                time: 'DESC'
+            }
+        })
+    }
+
     static async createProjection(model: Projection) {
         await repo.save({
             hallId: model.hallId,

@@ -4,7 +4,14 @@ import { ProjectionService } from "../services/projection.service";
 
 export const ProjectionRoute = Router()
 
-ProjectionRoute.get('/movie/:short', async (req, res) => {
+ProjectionRoute.get('/movie/id/:id', async (req, res) => {
+    await defineRequest(res, async () => {
+        const id = Number(req.params.id)
+        return await ProjectionService.getProjectionsByMovieId(id)
+    })
+})
+
+ProjectionRoute.get('/movie/short/:short', async (req, res) => {
     await defineRequest(res, async () => {
         const short = String(req.params.short)
         return await ProjectionService.getProjectionsByMovieShortUrl(short)

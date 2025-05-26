@@ -101,10 +101,11 @@ export class UserService {
         const whitelisted = [
             '/api/user/login',
             '/api/user/refresh',
-            '/api/user/register'
+            '/api/user/register',
+            '/api/movie'
         ]
 
-        if (whitelisted.includes(req.path)) {
+        if (whitelisted.find(w => req.path.startsWith(w))) {
             next()
             return
         }
