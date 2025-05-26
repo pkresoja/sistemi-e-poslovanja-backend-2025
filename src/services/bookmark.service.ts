@@ -3,6 +3,7 @@ import { AppDataSource } from "../db";
 import { Bookmark } from "../entities/Bookmark";
 import { User } from "../entities/User";
 import { MovieService } from "./movie.service";
+import { UserService } from "./user.service";
 
 const bookmarkRepo = AppDataSource.getRepository(Bookmark)
 const userRepo = AppDataSource.getRepository(User)
@@ -29,6 +30,20 @@ export class BookmarkService {
         }
 
         return data
+    }
+
+    static async getSimpleBookmarksByUserEmail(email: string) {
+        return await bookmarkRepo.find({
+            select: {
+                bookmarkId: true,
+                movieId: true,
+                createdAt: true
+            },
+            where: {
+                userId: await UserService.getUserIdByEmail(email),
+                deletedAt: IsNull()
+            }
+        })
     }
 
     static async createBookmark(email: string, movieId: number) {
