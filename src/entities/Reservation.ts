@@ -29,6 +29,12 @@ export class Reservation {
   @Column("int", { name: "num_of_seats", unsigned: true })
   numOfSeats: number;
 
+  @Column("datetime", { name: "paid_at", nullable: true })
+  paidAt: Date | null;
+
+  @Column("text", { name: "transaction_id", nullable: true })
+  transactionId: string | null;
+
   @Column("datetime", { name: "watched_at", nullable: true })
   watchedAt: Date | null;
 

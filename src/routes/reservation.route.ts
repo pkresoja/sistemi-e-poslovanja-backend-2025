@@ -23,6 +23,20 @@ ReservationRoute.post('/', async (req: any, res) => {
     )
 })
 
+ReservationRoute.put('/:id/pay', async (req: any, res) => {
+    await defineRequest(res, async () => {
+        const id = Number(req.params.id)
+        await ReservationService.payReservation(id, req.user.email)
+    })
+})
+
+ReservationRoute.put('/:id/rate', async (req: any, res) => {
+    await defineRequest(res, async () => {
+        const id = Number(req.params.id)
+        await ReservationService.rateReservation(id, req.user.email, req.body)
+    })
+})
+
 ReservationRoute.put('/:id', async (req: any, res) => {
     await defineRequest(res, async () => {
         const id = Number(req.params.id)
